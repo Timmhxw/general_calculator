@@ -1,5 +1,5 @@
 from . import common
-from .base import Buff,sum_of_buffs,Character,Enemy,Action
+from .base import Buff,sum_of_buffs,Character,Enemy,Attack
 from decimal import Decimal
 cfg = common.Const
 def decimal_add(*float_list):
@@ -7,7 +7,7 @@ def decimal_add(*float_list):
 
  
 
-def DMG_calculator(attacker:Character,defender:Enemy,action:Action):
+def DMG_calculator(attacker:Character,defender:Enemy,action:Attack):
     def get_buff(item:str):
         return sum_of_buffs(Buff.get_buff(item,attacker.stat,action)+attacker.get_private_buff(item,action))
     # first multiple area:Basic damage

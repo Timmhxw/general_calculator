@@ -20,8 +20,8 @@ class Yunjin(base.Character):
             ),times=30,condition={'action_tag':'A'},addition_flag=True
         )) 
         if self.num>=2:
-            self.Q.append(base.Buff('on_stage','Inc',0.15,{'action_tag':'A'}))
+            self.Q.append(base.Buff('on_stage','Inc',0.15,condition={'action_tag':'A'}))
         if self.num>=4:
             self.add_private_buff(base.Buff('all_stage','DEF percent',0.2,private=True))
         if self.num==6:
-            self.Q.append(base.Buff('on_stage','A speed',0.12,{'action_tag':'A'}))
+            self.Q.append(base.Buff('on_stage','A speed',0.12,condition={'action_tag':'A'}))

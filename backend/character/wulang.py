@@ -22,8 +22,6 @@ class Wulang(base.Character):
     def use_Q(self):
         self.Q = []
         self.Q.append(base.Buff('all_stage','DEF percent',0.25))
-        self.Q_buff = common.Buff(
-            {'on_stage':{'DEF percent':0.25}}
-        )
+
         self.use_E()
         

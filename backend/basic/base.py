@@ -1,6 +1,5 @@
 from . import common
-
-class Action:
+class Attack:
     def __init__(self,damage_func,action_tag:str='A',element:str='Phys',damage_tag:str='') -> None:
         '''
             damage_func:ACal
@@ -86,7 +85,7 @@ class Character(Actor):
         else:
             self.private_buff[stat][item] = self.private_buff[stat].get(item,[])
             self.private_buff[stat][item].append(new_buff)
-    def get_private_buff(self,item,action:Action=None):
+    def get_private_buff(self,item,action:Attack=None):
         queue = self.private_buff[self.stat].get(item,[])
         result = []
         remove_buff = []
@@ -97,12 +96,29 @@ class Character(Actor):
                 if(each.times==0)or(each.ddl==0):#ddl tobe fix:
                     remove_buff.append(each)
         if remove_buff:
-            pass
+            self.remove_buff(item,remove_buff)
         return result
     def remove_buff(self,item:str,buff_list:list):
         for stat in ["on_stage","off_stage"]:
             temp = self.private_buff[stat][item]
             self.private_buff[stat][item] = list(set(temp)-set(buff_list))
+    # to be DIY
+    def use_E(self):
+        return []
+    def use_Q(self):
+        return []
+    def state_machine(self,action_name:str):
+        '''
+        action_name is among[A,Z,P,F(mean flash),E,Q]
+        return list of attack or buff
+        '''
+        self.last_action = action_name
+        if action_name == 'E':
+            return self.use_E()
+        elif action_name == 'Q':
+            return self.use_Q()
+        else:
+            return []
 
 
 from decimal import Decimal
@@ -130,6 +146,8 @@ class Buff:
         self.item = item
         self.value = value
         self.ddl = ddl # to be fix
+        if ddl>0:
+            common.Timestamp.calc_end_timestamp(self.ddl)
         self.times = times 
         self.condition = condition
         self.private = private
@@ -137,7 +155,7 @@ class Buff:
         if not private:
             self.add_to_public(self)
         
-    def meet_condition(self,action:Action=None):
+    def meet_condition(self,action:Attack=None):
         if (self.condition=={}):
             pass
         elif action==None:
@@ -164,7 +182,7 @@ class Buff:
             cls.public_buff[stat][item] = cls.public_buff[stat].get(item,[])
             cls.public_buff[stat][item].append(index)
     @classmethod
-    def get_buff(cls,item,stat='on_stage',action:Action=None):
+    def get_buff(cls,item,stat='on_stage',action:Attack=None):
         assert stat in ["on_stage","off_stage"]
         queue = cls.public_buff[stat].get(item,[])
         result = []
@@ -177,13 +195,14 @@ class Buff:
                 if(buff.times==0)or(buff.ddl==0):#ddl tobe fix:
                     remove_buff.append(each)
         if remove_buff:
-            cls.remove_buff(remove_buff)
+            cls.remove_buff(item,remove_buff)
         return result
     @classmethod
     def remove_buff(cls,item:str,buff_list:list):
         for stat in ["on_stage","off_stage"]:
-            temp = cls.public_buff[stat][item]
-            cls.public_buff[stat][item] = list(set(temp)-set(buff_list))
+            temp = cls.public_buff[stat].get(item,[])
+            if temp != []:
+                cls.public_buff[stat][item] = list(set(temp)-set(buff_list))
     
 class ACal:
     '''active calculator,serve for buff calculation'''

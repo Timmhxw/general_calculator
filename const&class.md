@@ -26,26 +26,26 @@ Buff.ddl:剩余时间（序列长度），-1表示持久
 - Actor.tag：判断敌我、中立
 - Actor.transformative_list：记录受到的剧变反应
 ### 方法：
-- Actor.generate_action(Action)->Action 由输入的模板生成相应的动作，可由子类负责实现
+- Actor.generate_action(Attack)->Attack 由输入的模板生成相应的动作，可由子类负责实现
 
 
-## Action 类
+## Attack 类
 ### 属性：
-- Action.property(Property)
-- Action.actor(Actor)
-- Action.target(Actor)
-- Action.action_tag：普攻、重击、下落攻击、e、q
-- Action.element
-- Action.damage_tag：结算为何种类型的伤害
-- Action.addon_vector(uint8)：附着序列
-- Action.addon_vector_point: 附着指针
-- Action.addon_reset_time:附着重置时间
-- Action.last_index：记录上一次作用的时间序号
+- Attack.property(Property)
+- Attack.actor(Actor)
+- Attack.target(Actor)
+- Attack.action_tag：普攻、重击、下落攻击、e、q
+- Attack.element
+- Attack.damage_tag：结算为何种类型的伤害
+- Attack.addon_vector(uint8)：附着序列
+- Attack.addon_vector_point: 附着指针
+- Attack.addon_reset_time:附着重置时间
+- Attack.last_index：记录上一次作用的时间序号
 
 ### 方法：
-- Action.check：判断当前是否能附着，考虑重置与指针位置
-- Action.next：移动附着指针
-- Action.damage_func：直伤公式
+- Attack.check：判断当前是否能附着，考虑重置与指针位置
+- Attack.next：移动附着指针
+- Attack.damage_func：直伤公式
 
 ## Summoned(Actor) 派生类 召唤物
 - Summoned.ddl：剩余时间（序列长度），-1表示持久
@@ -55,7 +55,7 @@ Buff.ddl:剩余时间（序列长度），-1表示持久
  &ensp;{  
     &ensp;&ensp;'trigger':str 触发方式（伤害，反应，时间）  
     &ensp;&ensp;'duration': 触发间隔  
-    &ensp;&ensp;'action':Action 提供Action模板  
+    &ensp;&ensp;'action':Attack 提供Attack模板  
     &ensp;&ensp;'last moment'：记录上次施法时间  
 &ensp;}  
 ]
@@ -73,7 +73,7 @@ Character.tag == 'friend'
 &ensp;{  
     &ensp;&ensp;'buff':Buff 对己方提供的增益效果  
     &ensp;&ensp;'debuff':Buff 对敌方提供的减益效果  
-    &ensp;&ensp;'action':Action 提供的Action模板  
+    &ensp;&ensp;'action':Attack 提供的Attack模板  
     &ensp;&ensp;'state machine'：记录前后摇、上次施法时间、多段直伤公式  
     &ensp;&ensp;'summoned creation':Summoned 召唤物（后台伤害其实也能丢到这类）  
 &ensp;}  

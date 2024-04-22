@@ -35,24 +35,24 @@ class Noelle(base.Character):
         super().__init__(data, A_level, E_level, Q_level, num, Basic_value90,element='Rock')
         self.A = []
         for i in A_DMG.keys():
-            self.A.append(base.Action(
+            self.A.append(base.Attack(
                 base.ACal({'ATK':A_DMG[i][A_level]},self),
                 'A'
             ))
         self.Z = []
         for i in Z_DMG.keys():
-            self.Z.append(base.Action(
+            self.Z.append(base.Attack(
                 base.ACal({'ATK':Z_DMG[i][A_level]},self),
                 'Z'
             ))
         self.P = []
         for i in P_DMG.keys():
-            self.P.append(base.Action(
+            self.P.append(base.Attack(
                 base.ACal({'ATK':P_DMG[i][A_level]},self),
                 'P'
             ))
         self.E = []
-        self.E.append(base.Action(
+        self.E.append(base.Attack(
                 base.ACal({'ATK':E_DMG[A_level]},self),
                 'E',self.element
             ))
@@ -63,8 +63,9 @@ class Noelle(base.Character):
             self.parm.set('Z Inc',0.15)
         if num == 6:
             self.Q_DEF2ATK += 0.5
+        self.last_action = ''
     
-    def Q_buff(self):
+    def use_Q(self):
         buff = base.Buff(
             'all_stage',
             'ATK',
@@ -76,6 +77,33 @@ class Noelle(base.Character):
         )
         self.add_private_buff(buff)
         for each_action in self.A+self.Z+self.P:
-            assert isinstance(each_action,base.Action)
+            assert isinstance(each_action,base.Attack)
             each_action.force_element(buff,'Rock')
         return buff
+    
+    def state_machine(self,action_name:str):
+        if action_name=='A':
+            if self.last_action.startswith('A'):
+                if self.last_action =='A4':
+                    '''last attack'''
+                    self.last_action = 'A1'
+                    return self.A[0]
+                else:
+                    idx = int(self.last_action[-1])
+                    self.last_action = 'A' + str(idx+1)
+                    return self.A[idx]
+            else:
+                self.last_action = 'A1'
+                return self.A[0]
+        else:
+            self.last_action = action_name
+            if action_name == 'Z':
+                # to fix
+                return self.Z[0]
+            elif action_name == 'P':
+                return self.P[0]
+            elif action_name == 'E':
+                return self.E[0]
+            elif action_name == 'Q':
+                return self.use_Q()
+

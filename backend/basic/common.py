@@ -185,97 +185,102 @@ class Parameter(Property):
     '''
     pass
 
-class Buff():
-    # buff = {'on_stage':Parameter({}),'off_stage':Parameter({})}
-    on_stage = 'on_stage'
-    off_stage = 'off_stage'
-    all_stage = 'all_stage'
-    def __init__(self, data: dict = {},ddl:float=-1) -> None:
-        self.buff = {}
-        for key in ['on_stage','off_stage']:
-            self.buff[key] = Parameter(data.get(key,{}))
-        if data.get('all_stage',{}):
-            self.buff['on_stage'] += Parameter(data['all_stage'])
-            self.buff['off_stage'] += Parameter(data['all_stage'])
-        self.ddl = ddl
-    def add_buff(self,new_buff):
-        assert isinstance(new_buff,Buff),'invalid buff'
-        for key in ['on_stage','off_stage']:
-            self.buff[key]+= new_buff.buff[key]
-    def __add__(self,other):
-        assert isinstance(other,Buff),'invalid buff'
-        result = Buff()
-        result.add_buff(self)
-        result.add_buff(other)
-        return result
-    def add_single_buff(self,stat:str,item:str,value:float):
-        assert stat in ['on_stage','off_stage','all_stage']
-        if stat=='all_stage':
-            self.add_buff(Buff({'on_stage':{item:value}}))
-            self.add_buff(Buff({'off_stage':{item:value}}))
-        else:
-            self.add_buff(Buff({stat:{item:value}}))
+# class Buff():
+#     # buff = {'on_stage':Parameter({}),'off_stage':Parameter({})}
+#     on_stage = 'on_stage'
+#     off_stage = 'off_stage'
+#     all_stage = 'all_stage'
+#     def __init__(self, data: dict = {},ddl:float=-1) -> None:
+#         self.buff = {}
+#         for key in ['on_stage','off_stage']:
+#             self.buff[key] = Parameter(data.get(key,{}))
+#         if data.get('all_stage',{}):
+#             self.buff['on_stage'] += Parameter(data['all_stage'])
+#             self.buff['off_stage'] += Parameter(data['all_stage'])
+#         self.ddl = ddl
+#     def add_buff(self,new_buff):
+#         assert isinstance(new_buff,Buff),'invalid buff'
+#         for key in ['on_stage','off_stage']:
+#             self.buff[key]+= new_buff.buff[key]
+#     def __add__(self,other):
+#         assert isinstance(other,Buff),'invalid buff'
+#         result = Buff()
+#         result.add_buff(self)
+#         result.add_buff(other)
+#         return result
+#     def add_single_buff(self,stat:str,item:str,value:float):
+#         assert stat in ['on_stage','off_stage','all_stage']
+#         if stat=='all_stage':
+#             self.add_buff(Buff({'on_stage':{item:value}}))
+#             self.add_buff(Buff({'off_stage':{item:value}}))
+#         else:
+#             self.add_buff(Buff({stat:{item:value}}))
 
-    def set_buff(self,stat:str,item:str,value:float):
-        assert stat in ['on_stage','off_stage','all_stage']
-        if stat=='all_stage':
-            self.buff['on_stage'].set(item,value)
-            self.buff['off_stage'].set(item,value)
-        else:
-            self.buff[stat].set(item,value)
-    def remove_buff(self,new_buff):
-        assert isinstance(new_buff,Buff),'invalid buff'
-        for key in ['on_stage','off_stage']:
-            self.buff[key]-= new_buff.buff[key]
+#     def set_buff(self,stat:str,item:str,value:float):
+#         assert stat in ['on_stage','off_stage','all_stage']
+#         if stat=='all_stage':
+#             self.buff['on_stage'].set(item,value)
+#             self.buff['off_stage'].set(item,value)
+#         else:
+#             self.buff[stat].set(item,value)
+#     def remove_buff(self,new_buff):
+#         assert isinstance(new_buff,Buff),'invalid buff'
+#         for key in ['on_stage','off_stage']:
+#             self.buff[key]-= new_buff.buff[key]
 
-class ACal:
-    '''active calculator,serve for buff calculation'''
-    def __init__(self,func:dict,data_base:Parameter,add:list=[]) -> None:
-        '''
-        func:{
-            property:num,
-            'other':num,
-        }
-        use data in data_base,return sum(each_property*each_num)+other
-        '''
-        self.func = func
-        self.data_base = data_base
-        self.add = add
-    def __call__(self) -> float:
-        result = self.func.get('other',0)
-        for key,value in self.func.items():
-            prop_key = self.data_base.get(key)
-            prop_key_percent = self.data_base.get(key+' percent')
-            if prop_key_percent:
-                prop_key += prop_key_percent + self.data_base.get('basic '+key)
-            result += prop_key*value
-        if self.add!=[]:
-            result += sum([sum(each) for each in self.add])
-        return result
-    def __add__(self,other):
-        if isinstance(other,ACal):
-            if self.data_base==other.data_base:
-                func = {key:self.func.get(key,0)+other.func.get(key,0)for key in self.func.keys() | other.func.keys()}
-                return ACal(func,self.data_base,self.add+other.add)
-            else:
-                return ACal(self.func,self.data_base,self.add+[other])
-        else:
-            func = self.func.copy()
-            func['other'] = func.get('other',0)+other
-            return ACal(func,self.data_base,self.add)
+# class ACal:
+#     '''active calculator,serve for buff calculation'''
+#     def __init__(self,func:dict,data_base:Parameter,add:list=[]) -> None:
+#         '''
+#         func:{
+#             property:num,
+#             'other':num,
+#         }
+#         use data in data_base,return sum(each_property*each_num)+other
+#         '''
+#         self.func = func
+#         self.data_base = data_base
+#         self.add = add
+#     def __call__(self) -> float:
+#         result = self.func.get('other',0)
+#         for key,value in self.func.items():
+#             prop_key = self.data_base.get(key)
+#             prop_key_percent = self.data_base.get(key+' percent')
+#             if prop_key_percent:
+#                 prop_key += prop_key_percent + self.data_base.get('basic '+key)
+#             result += prop_key*value
+#         if self.add!=[]:
+#             result += sum([sum(each) for each in self.add])
+#         return result
+#     def __add__(self,other):
+#         if isinstance(other,ACal):
+#             if self.data_base==other.data_base:
+#                 func = {key:self.func.get(key,0)+other.func.get(key,0)for key in self.func.keys() | other.func.keys()}
+#                 return ACal(func,self.data_base,self.add+other.add)
+#             else:
+#                 return ACal(self.func,self.data_base,self.add+[other])
+#         else:
+#             func = self.func.copy()
+#             func['other'] = func.get('other',0)+other
+#             return ACal(func,self.data_base,self.add)
 
-    def __radd__(self,other):
-        assert not isinstance(other,ACal),'ACal error'
-        func = self.func.copy()
-        func['other'] = func.get('other',0)+other
-        return ACal(func,self.data_base,self.add)
-    def __float__(self) -> float:
-        return self.__call__()
-    def __repr__(self) -> str:
-        return str(self.__call__())
-    __str__= __repr__
+#     def __radd__(self,other):
+#         assert not isinstance(other,ACal),'ACal error'
+#         func = self.func.copy()
+#         func['other'] = func.get('other',0)+other
+#         return ACal(func,self.data_base,self.add)
+#     def __float__(self) -> float:
+#         return self.__call__()
+#     def __repr__(self) -> str:
+#         return str(self.__call__())
+#     __str__= __repr__
 
-  
+class Timestamp:
+    timestamp = 0
+    freq = 60
+    @classmethod        
+    def calc_end_timestamp(cls,duration:float):
+        return cls.timestamp + int(duration*cls.freq)
         
 
 if __name__=='__main__':
