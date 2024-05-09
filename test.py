@@ -19,23 +19,23 @@ if __name__=='__main__':
         Buff('all_stage','Inc',0.15),
     ]
 
-    # team = [fufu,wulang,yunjin,noelle]
-    # enemy = [Enemy()for _ in range(5)]
-    # action_list = [
-    #     [fufu,'Q'],
-    #     [wulang,'Q'],
-    #     [yunjin,'Q'],
-    #     [noelle,'Q'+'AAAF'*6]
-    # ]
+    team = [fufu,wulang,yunjin,noelle]
+    enemy = [Enemy()for _ in range(5)]
+    action_list = [
+        [fufu,'Q'],
+        [wulang,'Q'],
+        [yunjin,'Q'],
+        [noelle,'Q'+'AAAF'*6]
+    ]
 
-    # tl = Timeline(team=team,enemy=enemy,queue=action_list)
-    # tl.stream()
-    fufu.use_Q()
-    wulang.use_Q()
-    yunjin.use_Q()
-    noelle.stat = 'on_stage'
-    noelle.use_Q()
+    tl = Timeline(team=team,enemy=enemy,queue=action_list)
+    tl.stream()
+    # fufu.use_Q()
+    # wulang.use_Q()
+    # yunjin.use_Q()
+    # noelle.stat = 'on_stage'
+    # noelle.use_Q()
     
-    for i in range(4):
-        print(functional.DMG_calculator(noelle,Enemy(),noelle.A[i]))
+    # for i in range(4):
+    #     print(functional.DMG_calculator(noelle,Enemy(),noelle.A[i]))
     

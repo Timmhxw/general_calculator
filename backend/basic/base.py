@@ -261,3 +261,50 @@ def sum_of_buffs(input:list,secondary_calc:bool=False,condition_flag:bool=False)
         elif isinstance(each.value,float)or isinstance(each.value,int):
             result.append(each.value)
     return decimal_add(tuple(result))
+
+class Trigger:
+    def __init__(self):
+        self.condition = {}
+    
+    def ck_if_trigger(self,**conditions)->bool:
+        pass
+    
+    def __call__(self):
+        return self.ck_if_trigger()
+
+def reverse(a:int):
+    a = ((a & 0xaaaaaa)>>1)|((a & 0x555555)<<1)
+    a = ((a & 0xcccccc)>>2)|((a & 0x333333)<<2)
+    a = ((a & 0xf0f0f0)>>4)|((a & 0x0f0f0f)<<4)
+    a = ((a & 0xff0000)>>16)|(a &0xff00)|((a & 0xff)<<16)
+    return a
+		
+		
+class Addon:
+    '''附着
+    '''
+    def __init__(self,addon_period:int=3,reset_period:float=2.5,addon_list:list=[]):
+        if addon_list==[]:
+            temp=0
+            for each in range(24):
+                temp <<= 1
+                if each%addon_period == 0:
+                    emp += 1
+                self.addon_model = reverse(temp)
+        else:
+            temp=0
+            for each in addon_list:
+                temp =temp<<1+int(each)
+            self.addon_model = reverse(temp)
+        self.reset_period = reset_period
+        self.reset_timestamp = 0
+
+    def try_addon(self):
+        timestamp = common.Timestamp.timestamp
+        if timestamp>=self.reset_timestamp:
+            self.addon_list = self.addon_model
+            self.reset_timestamp = common.Timestamp.calc_end_timestamp(self.reset_period)
+        flag = (self.addon_list&1)==1
+        self.addon_list >>= 1
+        return flag
+    
